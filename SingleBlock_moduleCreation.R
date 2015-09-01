@@ -85,7 +85,7 @@ text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
 ##To check the efficiency of the chosen soft power, put it in here and plot
 ### Might try values as indicated by above (6 & then 7)
 
-k=softConnectivity(datE=datExpr,power=8, type = "signed")
+k=softConnectivity(datE=datExpr,power=10, type = "signed")
 
 # Plot a histogram of k and a scale free topology plot
 sizeGrWindow(10,5)
@@ -101,7 +101,7 @@ scaleFreePlot(k, main="Check scale free topology\n")
 ####  Proceed to module creation using automatic, dynamic cutoffs. 
 
 
-softPower = 8;
+softPower = 10;
 adjacency = adjacency(datExpr, power = softPower, type = "signed");
 TOM = TOMsimilarity(adjacency, TOMType = "signed");
 dissTOM = 1-TOM
@@ -163,7 +163,7 @@ plotDendroAndColors(geneTree, cbind(dynamicColors, mergedColors),
 #dev.off()
 
 # Rename to moduleColors
-moduleColors = dynamicColors
+moduleColors = mergedColors
 # Construct numerical labels corresponding to the colors
 colorOrder = c("grey", standardColors(50));
 moduleLabels = match(moduleColors, colorOrder)-1;
@@ -173,13 +173,9 @@ MEs = mergedMEs;
 ##### Now we'll make a dataframe to store the moduleColours for genes, 
 ### We'll keep adding to this baby later
 ### Match the names in the blocks to the colours
-
+Modules <- as.data.frame(dynamicColors)
+rownames(Modules) <- colnames(datExpr)
 #### 
-Modules <- data.frame(colnames(datExpr), moduleColors)
-lookfor <- c("DNMT1", "DNMT3A", "DNMT3B", "UHRF1", "EZH2", "DNMT3L", "MTHFR")
-
-Interest_mods <- Modules[Modules$colnames.datExpr %in% lookfor,] 
-
 
 # Save module colors and labels for use in subsequent parts
 save(MEs, moduleLabels, moduleColors, geneTree, Modules, 
@@ -200,17 +196,16 @@ colnames(MMPvalue1)=paste("PC",colnames(MEs),".pval",sep="");
 
 
 ### binding the correlation and pValue tables together (optional??)
-Gene       = rownames(datExpr)
-kMEtable1  = cbind(Gene,Gene,modules1)
+Gene       = colnames(datExpr)
+kMEtable1  = cbind(Gene,Gene,dynamicColors)
 for (i in 1:length(colorsA1))
   kMEtable1 = cbind(kMEtable1, geneModuleMembership1[,i], MMPvalue1[,i])
 colnames(kMEtable1)=c("PSID","Gene","Module",
                       sort(c(colnames(geneModuleMembership1), colnames(MMPvalue1))))
 
 write.csv(kMEtable1,"kMEtable_lnc.csv",row.names=FALSE)
-
 #####
-write.csv(geneModuleMembership1,"kMEtable_lnc.csv",row.names=TRUE)
+write.csv(geneModuleMembership1,"MMtable_lnc.csv",row.names=TRUE)
 write.csv(MMPvalue1,"Pvalues_for_MM_lnc.csv",row.names=TRUE)
 
 

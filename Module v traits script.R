@@ -24,6 +24,10 @@ MEs = orderMEs(MEs0)
 moduleTraitCor = cor(MEs, datTraits, use = "p");
 moduleTraitPvalue = corPvalueStudent(moduleTraitCor, nSamples);
 
+write.table(moduleTraitCor, "LncMod_Traits_cor.txt", sep = "\t")
+write.table(moduleTraitPvalue, "LncMod_Traits_pvalue.txt", sep = "\t")
+
+
 sizeGrWindow(10,6)
 # Will display correlations and their p-values
 textMatrix = paste(signif(moduleTraitCor, 2), "\n(",
@@ -41,15 +45,15 @@ labeledHeatmap(Matrix = moduleTraitCor,
                ySymbols = names(MEs),
                colorLabels = FALSE,
                colors = blueWhiteRed(50),
-               textMatrix = textMatrix,
+               #textMatrix = textMatrix,
                setStdMargins = FALSE,
                cex.text = 0.85,
-               zlim = c(-1,1),
+               zlim = c(-0.5,0.5),
                main = paste("High module expression vs trait genes"))
 ######################################
 
 
-datTraits1 <- read.table("methTraits2_Stir200i.txt", sep = "\t", header = TRUE, row.names = 1)
+datTraits1 <- read.table("Meth_TSS200_all.txt", sep = "\t", header = TRUE, row.names = 1)
 
 list1 <- intersect(rownames(datExpr), rownames(datTraits1))
 datTraits1 <- datTraits1[list1,]
@@ -66,6 +70,11 @@ MEs = orderMEs(MEs0)
 
 moduleTraitCor = cor(MEs, datTraits1, use = "p");
 moduleTraitPvalue = corPvalueStudent(moduleTraitCor, nSamples);
+
+##write out these babies
+write.table(moduleTraitCor, "LncMod_Meth_cor.txt", sep = "\t")
+write.table(moduleTraitPvalue, "LncMod_Meth_pvalue.txt", sep = "\t")
+
 
 sizeGrWindow(10,6)
 # Will display correlations and their p-values
@@ -87,23 +96,9 @@ labeledHeatmap(Matrix = moduleTraitCor,
                #textMatrix = textMatrix,
                setStdMargins = FALSE,
                cex.text = 0.85,
-               zlim = c(-1,1),
+               zlim = c(-0.5,0.5),
                main = paste("High module expression vs trait genes"))
-#### GREEEN IS THE INTERSTING ONE
 
-### Subset the green
-
-
-col <- as.factor(Modules$moduleColors)
-greens <- subset(Modules, col == "green")
-
-fares <- read.table("Fares_lns.txt", sep = "\t", header = TRUE)
-
-
-list <- intersect(Modules$colnames.datExpr., fares[,1])
-
-
-fares_list <- Modules[Modules$colnames.datExpr. %in% list,]
 
 ###### Set the trait of most interest in determining the modules
 
